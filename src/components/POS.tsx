@@ -105,10 +105,11 @@ export default function POS() {
       await saveReceiptToFolder(cart, total, paymentMethod);
       setCart([]);
       fetchProducts();
+      alert("Sale Completed Successfully!");
     } catch (error: any) {
-      alert("Sale Failed: " + error.message);
+      alert("Error: " + error.message);
     } finally {
-      setIsProcessing(false);
+      setIsProcessing(false); // Re-enables the UI after every outcome
     }
   };
 
