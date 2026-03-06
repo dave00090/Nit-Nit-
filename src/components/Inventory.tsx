@@ -46,7 +46,6 @@ export default function Inventory() {
     setLoading(false);
   }
 
-  // --- FETCH FROM DISTRIBUTORS TABLE ---
   async function fetchSuppliers() {
     const syncId = new Date().getTime(); 
     const { data, error } = await supabase
@@ -89,7 +88,6 @@ export default function Inventory() {
     setLoading(false);
   };
 
-  // --- INTEGRATED UPDATED SAVE LOGIC ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -104,7 +102,7 @@ export default function Inventory() {
       selling_price: Number(formData.selling_price),
       current_stock: Number(formData.current_stock),
       reorder_level: Number(formData.reorder_level),
-      supplier_id: formData.supplier_id || null // Link product to distributor
+      supplier_id: formData.supplier_id || null
     };
 
     let result;
@@ -113,7 +111,6 @@ export default function Inventory() {
     } else {
       result = await supabase.from('products').insert([submissionData]);
       
-      // Also log a purchase entry if a supplier is selected
       if (!result.error && formData.supplier_id && formData.current_stock > 0) {
         await supabase.from('supplier_purchases').insert([{
           supplier_id: formData.supplier_id,
@@ -208,7 +205,7 @@ export default function Inventory() {
             
             <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-5">
               
-              {/* SYNCED PARTNER SELECTOR */}
+              {/* SYNCED PARTNER SELECTOR — now optional */}
               <div className="col-span-2 space-y-1">
                 <div className="flex justify-between items-center px-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
@@ -217,12 +214,11 @@ export default function Inventory() {
                   <button type="button" onClick={fetchSuppliers} className="text-[9px] font-black uppercase text-amber-600 underline">Re-sync</button>
                 </div>
                 <select 
-                  required
                   className="w-full bg-slate-50 p-4 rounded-xl border-2 border-slate-100 font-bold outline-none focus:border-amber-500 appearance-none"
                   value={formData.supplier_id} 
                   onChange={e => setFormData({...formData, supplier_id: e.target.value})}
                 >
-                  <option value="">-- Choose Partner (AA, Al-Jazer, etc) --</option>
+                  <option value="">-- Choose Partner (Optional) --</option>
                   {suppliers.map(s => (
                     <option key={s.id} value={s.id}>{s.name}</option>
                   ))}

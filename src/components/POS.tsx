@@ -95,17 +95,20 @@ export default function POS() {
       }]);
       if (saleError) throw saleError;
 
-      const stockUpdates = cart.map(item => supabase.from('products').update({ current_stock: item.current_stock - item.quantity }).eq('id', item.id));
+      const stockUpdates = cart.map(item => 
+        supabase.from('products')
+          .update({ current_stock: item.current_stock - item.quantity })
+          .eq('id', item.id)
+      );
       await Promise.all(stockUpdates);
 
       await saveReceiptToFolder(cart, total, paymentMethod);
-      setIsProcessing(false); // Clear loading BEFORE emptying cart so button re-enables correctly
       setCart([]);
       fetchProducts();
     } catch (error: any) {
       alert("Sale Failed: " + error.message);
     } finally {
-      setIsProcessing(false); // Ensures loading clears even if an error occurs mid-flow
+      setIsProcessing(false);
     }
   };
 
